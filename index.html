@@ -9,15 +9,9 @@
   <meta name="apple-mobile-web-app-title" content="أهل باسوس" />
   <title>أهل باسوس | مجتمع القرية</title>
 
-  <!-- Google Fonts: Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
-  <!-- Supabase JS Client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- Dynamic Manifest for PWA -->
   <link rel="manifest" id="pwa-manifest" href="" />
 
   <style>
@@ -57,9 +51,7 @@
       --feed-gap: 7px;
     }
 
-    html {
-      font-size: var(--font-scale);
-    }
+    html { font-size: var(--font-scale); }
 
     * {
       box-sizing: border-box;
@@ -83,7 +75,7 @@
       padding: 0 12px;
     }
 
-    /* Fullscreen Auth Gate (Blocks Site Until Logged In) */
+    /* Fullscreen Auth Gate */
     #auth-gate {
       position: fixed;
       inset: 0;
@@ -118,7 +110,7 @@
       margin: 0 auto 12px;
     }
 
-    /* Top App Bar */
+    /* Header */
     header {
       position: sticky;
       top: 0;
@@ -177,12 +169,6 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      transition: 0.2s;
-    }
-
-    .icon-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
     }
 
     #secret-admin-btn {
@@ -192,10 +178,7 @@
       background: var(--primary-soft);
     }
 
-    /* Search Bar */
-    .search-bar-wrap {
-      padding-top: 10px;
-    }
+    .search-bar-wrap { padding-top: 10px; }
 
     .search-input {
       width: 100%;
@@ -208,11 +191,9 @@
       outline: none;
     }
 
-    .search-input:focus {
-      border-color: var(--primary);
-    }
+    .search-input:focus { border-color: var(--primary); }
 
-    /* Urgent News Card */
+    /* Urgent Card */
     .urgent-card {
       display: none;
       margin-top: 10px;
@@ -223,9 +204,7 @@
       padding: var(--card-pad);
     }
 
-    .urgent-card.active {
-      display: block;
-    }
+    .urgent-card.active { display: block; }
 
     .urgent-top {
       display: flex;
@@ -254,26 +233,12 @@
       animation: pulse 1.4s infinite;
     }
 
-    .urgent-time {
-      font-size: 0.74rem;
-      color: var(--muted);
-    }
+    .urgent-time { font-size: 0.74rem; color: var(--muted); }
+    .urgent-body { font-size: 0.9rem; font-weight: 700; color: var(--danger); }
 
-    .urgent-body {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--danger);
-    }
-
-    /* Smart Ads Banner */
-    .ads-wrap {
-      display: none;
-      margin-top: 10px;
-    }
-
-    .ads-wrap.active {
-      display: block;
-    }
+    /* Ads */
+    .ads-wrap { display: none; margin-top: 10px; }
+    .ads-wrap.active { display: block; }
 
     .ads-scroller {
       display: flex;
@@ -281,10 +246,7 @@
       overflow-x: auto;
       scroll-snap-type: x mandatory;
     }
-
-    .ads-scroller::-webkit-scrollbar {
-      display: none;
-    }
+    .ads-scroller::-webkit-scrollbar { display: none; }
 
     .ad-post {
       min-width: 100%;
@@ -295,13 +257,6 @@
       padding: var(--card-pad);
     }
 
-    .ad-tag-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-
     .ad-badge {
       background: var(--accent-soft);
       color: var(--accent);
@@ -309,20 +264,12 @@
       font-weight: 800;
       padding: 1px 8px;
       border-radius: 5px;
+      display: inline-block;
+      margin-bottom: 6px;
     }
 
-    .ad-post h3 {
-      font-size: 0.96rem;
-      font-weight: 800;
-      color: var(--accent);
-      margin-bottom: 3px;
-    }
-
-    .ad-post p {
-      font-size: 0.85rem;
-      color: var(--text);
-      opacity: 0.9;
-    }
+    .ad-post h3 { font-size: 0.96rem; font-weight: 800; color: var(--accent); margin-bottom: 3px; }
+    .ad-post p { font-size: 0.85rem; color: var(--text); opacity: 0.9; }
 
     .ad-btn {
       display: inline-flex;
@@ -338,7 +285,7 @@
       border-radius: 8px;
     }
 
-    /* Social Composer Box */
+    /* Composer */
     .composer-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -378,7 +325,6 @@
       font-size: 0.84rem;
       color: var(--muted);
       text-align: right;
-      cursor: pointer;
     }
 
     .composer-expanded {
@@ -387,10 +333,7 @@
       border-top: 1px solid var(--border);
       padding-top: 10px;
     }
-
-    .composer-expanded.open {
-      display: block;
-    }
+    .composer-expanded.open { display: block; }
 
     .pending-notice {
       display: none;
@@ -404,19 +347,14 @@
       font-weight: 700;
     }
 
-    /* Feed Stream */
+    /* Feed */
     .feed-header {
       margin: 14px 0 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-
-    .feed-header h2 {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--text);
-    }
+    .feed-header h2 { font-size: 0.95rem; font-weight: 800; color: var(--text); }
 
     .feed-count {
       font-size: 0.74rem;
@@ -469,17 +407,8 @@
       flex-shrink: 0;
     }
 
-    .post-title {
-      font-size: 0.92rem;
-      font-weight: 800;
-      color: var(--text);
-      line-height: 1.35;
-    }
-
-    .post-sub {
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
+    .post-title { font-size: 0.92rem; font-weight: 800; color: var(--text); line-height: 1.35; }
+    .post-sub { font-size: 0.72rem; color: var(--muted); }
 
     .cat-pill {
       font-size: 0.7rem;
@@ -491,12 +420,7 @@
       white-space: nowrap;
     }
 
-    .post-desc {
-      font-size: 0.86rem;
-      color: var(--text);
-      opacity: 0.92;
-      margin-bottom: 8px;
-    }
+    .post-desc { font-size: 0.86rem; color: var(--text); opacity: 0.92; margin-bottom: 8px; }
 
     .post-footer {
       border-top: 1px solid var(--border);
@@ -507,10 +431,7 @@
       gap: 8px;
     }
 
-    .post-location {
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
+    .post-location { font-size: 0.75rem; color: var(--muted); }
 
     .call-action {
       background: var(--primary);
@@ -526,11 +447,7 @@
       white-space: nowrap;
     }
 
-    .social-actions {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .social-actions { display: flex; align-items: center; gap: 6px; }
 
     .action-chip {
       background: var(--surface-elevated);
@@ -541,9 +458,6 @@
       padding: 4px 10px;
       border-radius: 8px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
     }
 
     .action-chip.liked {
@@ -552,17 +466,14 @@
       background: var(--primary-soft);
     }
 
-    /* Comments Section (Posts Only) */
+    /* Comments */
     .comments-box {
       display: none;
       margin-top: 9px;
       padding-top: 9px;
       border-top: 1px dashed var(--border);
     }
-
-    .comments-box.open {
-      display: block;
-    }
+    .comments-box.open { display: block; }
 
     .comment-item {
       background: var(--surface-elevated);
@@ -571,18 +482,9 @@
       margin-bottom: 6px;
       font-size: 0.8rem;
     }
+    .comment-author { font-weight: 800; color: var(--primary); font-size: 0.76rem; }
 
-    .comment-author {
-      font-weight: 800;
-      color: var(--primary);
-      font-size: 0.76rem;
-    }
-
-    .comment-form {
-      display: flex;
-      gap: 6px;
-      margin-top: 6px;
-    }
+    .comment-form { display: flex; gap: 6px; margin-top: 6px; }
 
     .comment-input {
       flex: 1;
@@ -595,7 +497,7 @@
       outline: none;
     }
 
-    /* Bottom Navigation Bar (Clean Text Only — No Emojis) */
+    /* Bottom Navigation */
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -626,14 +528,9 @@
       border-radius: 10px;
       cursor: pointer;
       position: relative;
-      transition: 0.2s;
     }
 
-    .nav-tab span {
-      font-size: 0.78rem;
-      font-weight: 800;
-      white-space: nowrap;
-    }
+    .nav-tab span { font-size: 0.78rem; font-weight: 800; white-space: nowrap; }
 
     .nav-tab.active {
       color: var(--primary);
@@ -650,7 +547,7 @@
       border-radius: 0 0 4px 4px;
     }
 
-    /* Profile & Settings View */
+    /* Profile & Settings */
     .profile-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -680,12 +577,7 @@
       font-weight: 900;
     }
 
-    .settings-group h3 {
-      font-size: 0.9rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-      color: var(--text);
-    }
+    .settings-group h3 { font-size: 0.9rem; font-weight: 800; margin-bottom: 10px; color: var(--text); }
 
     .segmented-control {
       display: grid;
@@ -773,11 +665,7 @@
       margin-bottom: 14px;
     }
 
-    .modal-header h3 {
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--primary);
-    }
+    .modal-header h3 { font-size: 1rem; font-weight: 800; color: var(--primary); }
 
     .close-btn {
       background: var(--surface-elevated);
@@ -790,17 +678,8 @@
       color: var(--text);
     }
 
-    .form-group {
-      margin-bottom: 10px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
-      font-weight: 700;
-      margin-bottom: 3px;
-      color: var(--muted);
-    }
+    .form-group { margin-bottom: 10px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 3px; color: var(--muted); }
 
     .form-control {
       width: 100%;
@@ -813,9 +692,7 @@
       outline: none;
     }
 
-    .form-control:focus {
-      border-color: var(--primary);
-    }
+    .form-control:focus { border-color: var(--primary); }
 
     .btn-primary {
       width: 100%;
@@ -859,12 +736,7 @@
       margin-bottom: 12px;
     }
 
-    .admin-card h4 {
-      font-size: 0.88rem;
-      font-weight: 800;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
+    .admin-card h4 { font-size: 0.88rem; font-weight: 800; margin-bottom: 8px; color: var(--text); }
 
     .switch-row {
       display: flex;
@@ -905,7 +777,7 @@
 </head>
 <body>
 
-  <!-- Mandatory Login Gate (Blocks Site Until Logged In) -->
+  <!-- Mandatory Login Gate -->
   <div id="auth-gate">
     <div class="auth-gate-card">
       <div class="auth-gate-logo">🏘️</div>
@@ -926,7 +798,7 @@
         <input type="password" id="gate-pass-input" class="form-control" placeholder="••••••••" />
       </div>
       <p id="gate-error" style="color:var(--danger); font-size:0.8rem; margin-bottom:10px; display:none;"></p>
-      <button type="button" id="gate-submit-btn" class="btn-primary" onclick="handleUserAuth()">دخول إلى أهل باسوس</button>
+      <button type="button" id="gate-submit-btn" class="btn-primary">دخول إلى أهل باسوس</button>
     </div>
   </div>
 
@@ -939,23 +811,22 @@
           <h1>أهل باسوس</h1>
         </div>
         <div class="header-actions">
-          <button type="button" class="icon-btn" onclick="loadCloudData()">تحديث</button>
-          <button type="button" class="icon-btn" onclick="triggerPWAInstall()">تثبيت</button>
-          <button type="button" class="icon-btn" id="secret-admin-btn" onclick="openAdminModal()">الإدارة</button>
+          <button type="button" class="icon-btn" id="refresh-btn">تحديث</button>
+          <button type="button" class="icon-btn" id="install-btn">تثبيت</button>
+          <button type="button" class="icon-btn" id="secret-admin-btn">الإدارة</button>
         </div>
       </div>
     </div>
   </header>
 
   <main class="container">
-    <!-- Main Feed / Tabs View -->
+    <!-- Main Feed View -->
     <div id="main-feed-view">
-      <!-- Search Input -->
       <div class="search-bar-wrap">
-        <input type="text" id="search-input" class="search-input" placeholder="ابحث في باسوس عن دكتور، صيدلية، صنايعي، خبر..." oninput="handleSearchInput()" />
+        <input type="text" id="search-input" class="search-input" placeholder="ابحث في باسوس عن دكتور، صيدلية، صنايعي، خبر..." />
       </div>
 
-      <!-- Urgent News Post -->
+      <!-- Urgent News -->
       <section class="urgent-card" id="urgent-card">
         <div class="urgent-top">
           <span class="urgent-pill"><span class="pulse-dot"></span> خبر عاجل</span>
@@ -964,14 +835,14 @@
         <div class="urgent-body" id="urgent-text-display"></div>
       </section>
 
-      <!-- Smart Ads Section -->
+      <!-- Ads -->
       <section class="ads-wrap" id="ads-wrap">
         <div class="ads-scroller" id="ads-container"></div>
       </section>
 
-      <!-- Visitor Post Composer (Requires Admin Approval) -->
+      <!-- Composer -->
       <section class="composer-card" id="visitor-composer">
-        <div class="composer-top" onclick="toggleComposer()">
+        <div class="composer-top" id="composer-toggle-btn">
           <div class="user-avatar-sm" id="composer-avatar">م</div>
           <div class="composer-trigger-input" id="composer-placeholder">عندك خبر أو استفسار لأهل باسوس؟ انشره هنا...</div>
         </div>
@@ -989,13 +860,12 @@
             <input type="text" id="post-new-loc" class="form-control" placeholder="المكان في باسوس (اختياري)" />
           </div>
           <div style="display:flex; gap:8px;">
-            <button type="button" class="btn-primary" id="submit-post-btn" onclick="submitVisitorPost()">إرسال للمراجعة والنشر</button>
-            <button type="button" class="btn-secondary" onclick="toggleComposer()">إلغاء</button>
+            <button type="button" class="btn-primary" id="submit-post-btn">إرسال للمراجعة والنشر</button>
+            <button type="button" class="btn-secondary" id="cancel-post-btn">إلغاء</button>
           </div>
         </div>
       </section>
 
-      <!-- Scrollable Feed Stream -->
       <div class="feed-header">
         <h2 id="feed-section-title">آخر التحديثات والأخبار</h2>
         <span class="feed-count" id="feed-count">0</span>
@@ -1004,11 +874,10 @@
       <div class="feed-list" id="feed-list"></div>
     </div>
 
-    <!-- Account & Appearance Settings View (Tab 5) -->
+    <!-- Account View -->
     <div id="account-settings-view" style="display:none;">
       <div class="profile-card" id="profile-box"></div>
 
-      <!-- Visitor Display & Font Settings -->
       <div class="profile-card">
         <div class="settings-group">
           <h3>إعدادات حجم الخط وشكل الموقع</h3>
@@ -1034,7 +903,6 @@
         </div>
       </div>
 
-      <!-- Contact Admin Section at the Bottom of Account Page -->
       <div class="profile-card">
         <div class="settings-group">
           <h3>التواصل مع إدارة الموقع</h3>
@@ -1050,36 +918,25 @@
     </div>
   </main>
 
-  <!-- Clean Bottom Navigation Bar (No Emojis) -->
+  <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <div class="bottom-nav-inner">
-      <button type="button" class="nav-tab active" data-tab="all" onclick="switchTab('all', this)">
-        <span>الرئيسية</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="health" onclick="switchTab('health', this)">
-        <span>صحة وعيادات</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="crafts" onclick="switchTab('crafts', this)">
-        <span>صنايعية</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="news" onclick="switchTab('news', this)">
-        <span>أخبار البلد</span>
-      </button>
-      <button type="button" class="nav-tab" data-tab="account" onclick="switchTab('account', this)">
-        <span>حسابي</span>
-      </button>
+      <button type="button" class="nav-tab active" data-tab="all"><span>الرئيسية</span></button>
+      <button type="button" class="nav-tab" data-tab="health"><span>صحة وعيادات</span></button>
+      <button type="button" class="nav-tab" data-tab="crafts"><span>صنايعية</span></button>
+      <button type="button" class="nav-tab" data-tab="news"><span>أخبار البلد</span></button>
+      <button type="button" class="nav-tab" data-tab="account"><span>حسابي</span></button>
     </div>
   </nav>
 
-  <!-- Admin Modal (Revealed via Secret Search Code) -->
+  <!-- Admin Modal -->
   <div class="modal-overlay" id="admin-modal">
     <div class="modal-box">
       <div class="modal-header">
         <h3>لوحة تحكم أهل باسوس</h3>
-        <button type="button" class="close-btn" onclick="closeAdminModal()">✕</button>
+        <button type="button" class="close-btn" id="close-admin-btn">✕</button>
       </div>
 
-      <!-- Admin Login View -->
       <div id="admin-login-view">
         <div class="form-group">
           <label>البريد الإلكتروني (Gmail)</label>
@@ -1090,10 +947,9 @@
           <input type="password" id="admin-password" class="form-control" placeholder="••••••••" />
         </div>
         <p id="login-error" style="color: var(--danger); font-size: 0.8rem; margin-bottom: 10px; display: none;"></p>
-        <button type="button" class="btn-primary" onclick="handleAdminLogin()">تسجيل الدخول</button>
+        <button type="button" class="btn-primary" id="admin-login-btn">تسجيل الدخول</button>
       </div>
 
-      <!-- Admin Dashboard View -->
       <div id="admin-dashboard-view" style="display: none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <span style="font-size:0.8rem; color:var(--primary); font-weight:700;">متصل بالسيرفر كمشرف</span>
@@ -1103,13 +959,11 @@
           </div>
         </div>
 
-        <!-- 0. Pending Visitor Posts Approval Queue -->
         <div class="admin-card" style="border-color: rgba(245, 158, 11, 0.45);">
           <h4>منشورات بانتظار الموافقة (<span id="pending-count-badge">0</span>)</h4>
           <div id="admin-pending-list"></div>
         </div>
 
-        <!-- 1. Urgent News Control -->
         <div class="admin-card">
           <h4>لوحة الخبر العاجل</h4>
           <div class="switch-row">
@@ -1122,7 +976,6 @@
           <button type="button" class="btn-primary" onclick="saveUrgentSettings()">تحديث الخبر للجميع</button>
         </div>
 
-        <!-- 2. Smart Ads Control -->
         <div class="admin-card">
           <h4>إدارة الإعلانات</h4>
           <div class="switch-row">
@@ -1142,7 +995,6 @@
           <div id="admin-ads-list"></div>
         </div>
 
-        <!-- 3. Feed Items Control -->
         <div class="admin-card">
           <h4>إدارة المنشورات ودليل الأرقام</h4>
           <input type="hidden" id="edit-item-id" value="" />
@@ -1177,21 +1029,27 @@
 
   <script>
     // ==========================================
-    // 1. SUPABASE CLOUD CONFIGURATION
+    // 1. DIRECT REST API CONNECTION (ZERO EXTERNAL LIBS)
     // ==========================================
-    const SUPABASE_URL = 'https://gjtomloeqjfptucomktv.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_1xiDjhFAQdtw6HpaAY9K9A_QegZzcZy';
-    let db = null;
-    try {
-      if (window.supabase && window.supabase.createClient) {
-        db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      }
-    } catch (e) {
-      console.error('Supabase init error:', e);
+    const SB_URL = 'https://gjtomloeqjfptucomktv.supabase.co/rest/v1';
+    const SB_KEY = 'sb_publishable_1xiDjhFAQdtw6HpaAY9K9A_QegZzcZy';
+
+    async function sbFetch(path, options) {
+      const opts = options || {};
+      const headers = Object.assign({
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      }, opts.headers || {});
+      const res = await fetch(SB_URL + path, Object.assign({}, opts, { headers }));
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      return text ? JSON.parse(text) : null;
     }
 
-    const USER_KEY = 'ahl_basoos_current_user_v8';
-    const PREFS_KEY = 'ahl_basoos_ui_prefs_v8';
+    const USER_KEY = 'ahl_basoos_user_v9';
+    const PREFS_KEY = 'ahl_basoos_prefs_v9';
     const SECRET_ADMIN_PHRASE = 'M0h@med2232008';
 
     let appState = {
@@ -1202,16 +1060,23 @@
       items: []
     };
 
-    let currentUser = JSON.parse(localStorage.getItem(USER_KEY)) || null;
-    let uiPrefs = JSON.parse(localStorage.getItem(PREFS_KEY)) || { fontSize: '14px', fontBtn: 'font-md', theme: 'dark', layout: 'normal' };
-    let currentTab = 'all';
-    let isAdminLoggedIn = sessionStorage.getItem('ahl_basoos_admin') === 'true';
-    let likedPosts = JSON.parse(localStorage.getItem('ahl_basoos_likes') || '{}');
+    let currentUser = null;
+    try { currentUser = JSON.parse(localStorage.getItem(USER_KEY)); } catch (e) {}
 
-    const ADMIN_CREDENTIALS = {
-      email: 'admin@gmail.com',
-      password: '123456'
-    };
+    let uiPrefs = { fontSize: '14px', fontBtn: 'font-md', theme: 'dark', layout: 'normal' };
+    try {
+      const savedPrefs = JSON.parse(localStorage.getItem(PREFS_KEY));
+      if (savedPrefs) uiPrefs = savedPrefs;
+    } catch (e) {}
+
+    let currentTab = 'all';
+    let isAdminLoggedIn = false;
+    try { isAdminLoggedIn = sessionStorage.getItem('ahl_basoos_admin') === 'true'; } catch (e) {}
+
+    let likedPosts = {};
+    try { likedPosts = JSON.parse(localStorage.getItem('ahl_basoos_likes') || '{}'); } catch (e) {}
+
+    const ADMIN_CREDENTIALS = { email: 'admin@gmail.com', password: '123456' };
 
     const TAB_TITLES = {
       all: 'آخر التحديثات والأخبار',
@@ -1227,30 +1092,26 @@
     };
 
     // ==========================================
-    // 2. CLOUD DATA SYNC (SUPABASE)
+    // 2. LOAD CLOUD DATA
     // ==========================================
     async function loadCloudData() {
-      if (!db) {
-        renderAll();
-        return;
-      }
       try {
-        const [settingsRes, adsRes, postsRes] = await Promise.all([
-          db.from('settings').select('*').eq('id', 1).maybeSingle(),
-          db.from('ads').select('*').order('created_at', { ascending: false }),
-          db.from('posts').select('*').order('created_at', { ascending: false })
+        const [settingsArr, adsArr, postsArr] = await Promise.all([
+          sbFetch('/settings?id=eq.1'),
+          sbFetch('/ads?order=created_at.desc'),
+          sbFetch('/posts?order=created_at.desc')
         ]);
 
-        if (settingsRes && settingsRes.data) {
+        if (settingsArr && settingsArr[0]) {
           appState.urgent = {
-            active: settingsRes.data.urgent_active,
-            text: settingsRes.data.urgent_text || ''
+            active: settingsArr[0].urgent_active,
+            text: settingsArr[0].urgent_text || ''
           };
-          appState.adsEnabled = settingsRes.data.ads_enabled;
+          appState.adsEnabled = settingsArr[0].ads_enabled;
         }
 
-        if (adsRes && adsRes.data) {
-          appState.ads = adsRes.data.map(a => ({
+        if (adsArr) {
+          appState.ads = adsArr.map(a => ({
             id: a.id,
             title: a.title,
             desc: a.description,
@@ -1258,8 +1119,8 @@
           }));
         }
 
-        if (postsRes && postsRes.data) {
-          const allPosts = postsRes.data.map(p => ({
+        if (postsArr) {
+          const allPosts = postsArr.map(p => ({
             id: p.id,
             cat: p.cat,
             status: p.status,
@@ -1276,16 +1137,14 @@
           appState.items = allPosts.filter(p => p.status === 'approved');
           appState.pendingPosts = allPosts.filter(p => p.status === 'pending');
         }
-
-        renderAll();
       } catch (err) {
-        console.error('Cloud load error:', err);
-        renderAll();
+        console.error('Sync info:', err);
       }
+      renderAll();
     }
 
     // ==========================================
-    // 3. MANDATORY AUTH GATE & USER ACCOUNT
+    // 3. AUTH GATE & ACCOUNT
     // ==========================================
     function checkAuthGate() {
       const gate = document.getElementById('auth-gate');
@@ -1310,50 +1169,48 @@
 
       errEl.style.display = 'none';
       currentUser = { name, email };
-      localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+      try { localStorage.setItem(USER_KEY, JSON.stringify(currentUser)); } catch (e) {}
+
+      // Open the site immediately
       checkAuthGate();
       renderAll();
 
-      // Sync user with Supabase in background
-      if (db) {
-        try {
-          const { data: existingUser } = await db.from('users_list').select('*').eq('email', email).maybeSingle();
-          if (!existingUser) {
-            await db.from('users_list').insert([{ email, name, password }]);
-          }
-          await loadCloudData();
-        } catch (e) {
-          console.error('User sync warning:', e);
+      // Save user to Supabase in background
+      try {
+        const existing = await sbFetch('/users_list?email=eq.' + encodeURIComponent(email));
+        if (!existing || existing.length === 0) {
+          await sbFetch('/users_list', {
+            method: 'POST',
+            body: JSON.stringify([{ email, name, password }])
+          });
         }
-      }
+        await loadCloudData();
+      } catch (e) {}
     }
 
     function logoutUser() {
       currentUser = null;
-      localStorage.removeItem(USER_KEY);
+      try { localStorage.removeItem(USER_KEY); } catch (e) {}
       checkAuthGate();
     }
 
     function updateUserUI() {
       if (!currentUser) return;
-      const compAvatar = document.getElementById('composer-avatar');
-      const compPlaceholder = document.getElementById('composer-placeholder');
+      document.getElementById('composer-avatar').textContent = currentUser.name.charAt(0);
+      document.getElementById('composer-placeholder').textContent =
+        'بم تفكر يا ' + currentUser.name.split(' ')[0] + '؟ اكتب منشورك (يُنشر بعد موافقة المشرف)...';
 
-      compAvatar.textContent = currentUser.name.charAt(0);
-      compPlaceholder.textContent = `بم تفكر يا ${currentUser.name.split(' ')[0]}؟ اكتب منشورك (يُنشر بعد موافقة المشرف)...`;
+      const myApproved = appState.items.filter(i => i.authorEmail === currentUser.email).length;
+      const myPending = appState.pendingPosts.filter(p => p.authorEmail === currentUser.email).length;
 
-      const profileBox = document.getElementById('profile-box');
-      const myApprovedCount = appState.items.filter(i => i.authorEmail === currentUser.email).length;
-      const myPendingCount = appState.pendingPosts.filter(p => p.authorEmail === currentUser.email).length;
-
-      profileBox.innerHTML = `
+      document.getElementById('profile-box').innerHTML = `
         <div class="profile-header">
           <div class="profile-avatar-lg">${escapeHTML(currentUser.name.charAt(0))}</div>
           <div>
             <div style="font-size:1.05rem; font-weight:800;">${escapeHTML(currentUser.name)}</div>
             <div style="font-size:0.78rem; color:var(--muted);">${escapeHTML(currentUser.email)}</div>
             <div style="font-size:0.74rem; color:var(--primary); margin-top:2px;">
-              منشورات منشورة: ${myApprovedCount} • قيد المراجعة: ${myPendingCount}
+              منشورات منشورة: ${myApproved} • قيد المراجعة: ${myPending}
             </div>
           </div>
         </div>
@@ -1362,7 +1219,7 @@
     }
 
     // ==========================================
-    // 4. VISITOR APPEARANCE & FONT SETTINGS
+    // 4. UI PREFERENCES
     // ==========================================
     function applyUIPrefs() {
       document.documentElement.style.setProperty('--font-scale', uiPrefs.fontSize);
@@ -1390,31 +1247,18 @@
         document.getElementById('layout-compact-btn').classList.remove('active');
       }
 
-      localStorage.setItem(PREFS_KEY, JSON.stringify(uiPrefs));
+      try { localStorage.setItem(PREFS_KEY, JSON.stringify(uiPrefs)); } catch (e) {}
     }
 
-    function setFontSize(size, btnId) {
-      uiPrefs.fontSize = size;
-      uiPrefs.fontBtn = btnId;
-      applyUIPrefs();
-    }
-
-    function setTheme(theme) {
-      uiPrefs.theme = theme;
-      applyUIPrefs();
-    }
-
-    function setLayout(layout) {
-      uiPrefs.layout = layout;
-      applyUIPrefs();
-    }
+    function setFontSize(size, btnId) { uiPrefs.fontSize = size; uiPrefs.fontBtn = btnId; applyUIPrefs(); }
+    function setTheme(theme) { uiPrefs.theme = theme; applyUIPrefs(); }
+    function setLayout(layout) { uiPrefs.layout = layout; applyUIPrefs(); }
 
     // ==========================================
-    // 5. VISITOR POSTING (PENDING APPROVAL) & SOCIAL
+    // 5. POSTING & SOCIAL
     // ==========================================
     function toggleComposer() {
-      const box = document.getElementById('composer-expanded');
-      box.classList.toggle('open');
+      document.getElementById('composer-expanded').classList.toggle('open');
     }
 
     async function submitVisitorPost() {
@@ -1428,24 +1272,25 @@
       btn.disabled = true;
       btn.textContent = 'جاري الإرسال...';
 
-      const newPost = {
-        id: 'p_' + Date.now().toString(),
-        cat: 'news',
-        status: 'pending',
-        author_name: currentUser.name,
-        author_email: currentUser.email,
-        time_label: new Date().toLocaleDateString('ar-EG'),
-        name: title || 'مشاركة من ' + currentUser.name,
-        meta: desc,
-        loc: loc || 'قرية باسوس',
-        phone: '',
-        likes: 0,
-        comments: []
-      };
-
-      if (db) {
-        await db.from('posts').insert([newPost]);
-      }
+      try {
+        await sbFetch('/posts', {
+          method: 'POST',
+          body: JSON.stringify([{
+            id: 'p_' + Date.now().toString(),
+            cat: 'news',
+            status: 'pending',
+            author_name: currentUser.name,
+            author_email: currentUser.email,
+            time_label: new Date().toLocaleDateString('ar-EG'),
+            name: title || 'مشاركة من ' + currentUser.name,
+            meta: desc,
+            loc: loc || 'قرية باسوس',
+            phone: '',
+            likes: 0,
+            comments: []
+          }])
+        });
+      } catch (e) {}
 
       document.getElementById('post-new-title').value = '';
       document.getElementById('post-new-desc').value = '';
@@ -1477,11 +1322,14 @@
       const updatedComments = [...(item.comments || []), { author: currentUser.name, text }];
       input.value = '';
 
-      if (db) {
-        await db.from('posts').update({ comments: updatedComments }).eq('id', id);
-      }
-      await loadCloudData();
+      try {
+        await sbFetch('/posts?id=eq.' + encodeURIComponent(id), {
+          method: 'PATCH',
+          body: JSON.stringify({ comments: updatedComments })
+        });
+      } catch (e) {}
 
+      await loadCloudData();
       setTimeout(() => {
         const box = document.getElementById('comments-' + id);
         if (box) box.classList.add('open');
@@ -1499,16 +1347,19 @@
         likedPosts[id] = true;
         newLikes += 1;
       }
-      localStorage.setItem('ahl_basoos_likes', JSON.stringify(likedPosts));
+      try { localStorage.setItem('ahl_basoos_likes', JSON.stringify(likedPosts)); } catch (e) {}
       item.likes = newLikes;
       renderFeed();
-      if (db) {
-        await db.from('posts').update({ likes: newLikes }).eq('id', id);
-      }
+      try {
+        await sbFetch('/posts?id=eq.' + encodeURIComponent(id), {
+          method: 'PATCH',
+          body: JSON.stringify({ likes: newLikes })
+        });
+      } catch (e) {}
     }
 
     // ==========================================
-    // 6. SECRET SEARCH & FEED RENDERING
+    // 6. SEARCH & FEED
     // ==========================================
     function handleSearchInput() {
       const searchEl = document.getElementById('search-input');
@@ -1517,13 +1368,10 @@
 
       if (val === SECRET_ADMIN_PHRASE || isAdminLoggedIn) {
         adminBtn.style.display = 'flex';
-        if (val === SECRET_ADMIN_PHRASE) {
-          searchEl.value = '';
-        }
+        if (val === SECRET_ADMIN_PHRASE) searchEl.value = '';
       } else {
         adminBtn.style.display = 'none';
       }
-
       renderFeed();
     }
 
@@ -1567,9 +1415,7 @@
       if (appState.adsEnabled && appState.ads.length > 0) {
         container.innerHTML = appState.ads.map(ad => `
           <div class="ad-post">
-            <div class="ad-tag-row">
-              <span class="ad-badge">إعلان ممول • أهل باسوس</span>
-            </div>
+            <span class="ad-badge">إعلان ممول • أهل باسوس</span>
             <h3>${escapeHTML(ad.title)}</h3>
             <p>${escapeHTML(ad.desc)}</p>
             ${ad.phone ? `<a class="ad-btn" href="${ad.phone.startsWith('http') ? escapeHTML(ad.phone) : 'tel:' + escapeHTML(ad.phone)}">تواصل الآن</a>` : ''}
@@ -1649,4 +1495,56 @@
                   <div class="comment-item">
                     <div class="comment-author">${escapeHTML(c.author)}</div>
                     <div>${escapeHTML(c.text)}</div>
-      
+                  </div>
+                `).join('')}
+                <div class="comment-form">
+                  <input type="text" id="comment-input-${item.id}" class="comment-input" placeholder="اكتب تعليقك..." />
+                  <button type="button" class="btn-secondary" onclick="addComment('${item.id}')">إرسال</button>
+                </div>
+              </div>
+            ` : ''}
+          </article>
+        `;
+      }).join('');
+    }
+
+    function renderAll() {
+      if (isAdminLoggedIn) document.getElementById('secret-admin-btn').style.display = 'flex';
+      updateUserUI();
+      renderUrgent();
+      renderAds();
+      renderFeed();
+      if (isAdminLoggedIn) renderAdminLists();
+    }
+
+    // ==========================================
+    // 7. ADMIN CONTROLS
+    // ==========================================
+    function openAdminModal() {
+      document.getElementById('admin-modal').classList.add('open');
+      updateAdminView();
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').classList.remove('open');
+    }
+
+    function updateAdminView() {
+      const loginView = document.getElementById('admin-login-view');
+      const dashView = document.getElementById('admin-dashboard-view');
+      if (isAdminLoggedIn) {
+        loginView.style.display = 'none';
+        dashView.style.display = 'block';
+        document.getElementById('urgent-toggle').checked = appState.urgent.active;
+        document.getElementById('urgent-input').value = appState.urgent.text;
+        document.getElementById('ads-toggle').checked = appState.adsEnabled;
+        renderAdminLists();
+      } else {
+        loginView.style.display = 'block';
+        dashView.style.display = 'none';
+      }
+    }
+
+    function handleAdminLogin() {
+      const email = document.getElementById('admin-email').value.trim().toLowerCase();
+      const pass = document.getElementById('admin-password').v
