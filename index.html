@@ -14,6 +14,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <!-- Dynamic Manifest for PWA -->
   <link rel="manifest" id="pwa-manifest" href="" />
 
@@ -826,6 +829,11 @@
       cursor: pointer;
     }
 
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .btn-secondary {
       background: var(--surface-elevated);
       color: var(--text);
@@ -902,13 +910,13 @@
 </head>
 <body>
 
-  <!-- Mandatory Login Gate (Site does not open without an account) -->
+  <!-- Mandatory Login Gate (Blocks Site Until Logged In) -->
   <div id="auth-gate">
     <div class="auth-gate-card">
       <div class="auth-gate-logo">🏘️</div>
       <h2 style="text-align:center; font-size:1.15rem; font-weight:900; margin-bottom:4px;">أهل باسوس</h2>
       <p style="text-align:center; font-size:0.8rem; color:var(--muted); margin-bottom:16px;">
-        المنصة خاصة بأهالي باسوس فقط. يرجى تسجيل الدخول أو إنشاء حساب بالجيميل للمتابعة.
+        المنصة خاصة بأهالي باسوس فقط. سجل دخولك أو أنشئ حسابك بالجيميل للمتابعة.
       </p>
       <form onsubmit="handleUserAuth(event)">
         <div class="form-group">
@@ -923,7 +931,8 @@
           <label>كلمة المرور</label>
           <input type="password" id="gate-pass-input" class="form-control" placeholder="••••••••" required />
         </div>
-        <button type="submit" class="btn-primary">دخول إلى أهل باسوس</button>
+        <p id="gate-error" style="color:var(--danger); font-size:0.8rem; margin-bottom:10px; display:none;"></p>
+        <button type="submit" id="gate-submit-btn" class="btn-primary">دخول إلى أهل باسوس</button>
       </form>
     </div>
   </div>
@@ -937,6 +946,7 @@
           <h1>أهل باسوس</h1>
         </div>
         <div class="header-actions">
+          <button class="icon-btn" onclick="loadCloudData()" title="تحديث">تحديث</button>
           <button class="icon-btn" onclick="triggerPWAInstall()">تثبيت</button>
           <button class="icon-btn" id="secret-admin-btn" onclick="openAdminModal()">الإدارة</button>
         </div>
@@ -986,7 +996,7 @@
             <input type="text" id="post-new-loc" class="form-control" placeholder="المكان في باسوس (اختياري)" />
           </div>
           <div style="display:flex; gap:8px;">
-            <button class="btn-primary" onclick="submitVisitorPost()">إرسال للمراجعة والنشر</button>
+            <button class="btn-primary" id="submit-post-btn" onclick="submitVisitorPost()">إرسال للمراجعة والنشر</button>
             <button class="btn-secondary" onclick="toggleComposer()">إلغاء</button>
           </div>
         </div>
@@ -998,12 +1008,13 @@
         <span class="feed-count" id="feed-count">0</span>
       </div>
 
-      <div class="feed-list" id="feed-list"></div>
+      <div class="feed-list" id="feed-list">
+        <div class="post-card" style="text-align:center; padding:24px; color:var(--muted);">جاري تحميل بيانات أهل باسوس...</div>
+      </div>
     </div>
 
     <!-- Account & Appearance Settings View (Tab 5) -->
     <div id="account-settings-view" style="display:none;">
-      <!-- User Account Card -->
       <div class="profile-card" id="profile-box"></div>
 
       <!-- Visitor Display & Font Settings -->
@@ -1096,9 +1107,9 @@
       <!-- Admin Dashboard View -->
       <div id="admin-dashboard-view" style="display: none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <span style="font-size:0.8rem; color:var(--primary); font-weight:700;">متصل كمشرف</span>
+          <span style="font-size:0.8rem; color:var(--primary); font-weight:700;">متصل بالسيرفر كمشرف</span>
           <div style="display:flex; gap:6px;">
-            <button class="btn-secondary" onclick="resetDemoData()">إعادة البيانات</button>
+            <button class="btn-secondary" onclick="loadCloudData()">تحديث</button>
             <button class="btn-secondary" onclick="logoutAdmin()">خروج</button>
           </div>
         </div>
@@ -1119,7 +1130,7 @@
           <div class="form-group">
             <input type="text" id="urgent-input" class="form-control" placeholder="نص الخبر العاجل..." />
           </div>
-          <button class="btn-primary" onclick="saveUrgentSettings()">تحديث الخبر</button>
+          <button class="btn-primary" onclick="saveUrgentSettings()">تحديث الخبر للجميع</button>
         </div>
 
         <!-- 2. Smart Ads Control -->
@@ -1177,93 +1188,24 @@
 
   <script>
     // ==========================================
-    // 1. STATE, PREFERENCES & DEMO DATA
+    // 1. SUPABASE CLOUD CONFIGURATION
     // ==========================================
-    const STORAGE_KEY = 'ahl_basoos_social_v6';
-    const USER_KEY = 'ahl_basoos_current_user_v6';
-    const PREFS_KEY = 'ahl_basoos_ui_prefs_v6';
+    const SUPABASE_URL = 'https://gjtomloeqjfptucomktv.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_1xiDjhFAQdtw6HpaAY9K9A_QegZzcZy';
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const USER_KEY = 'ahl_basoos_current_user_v7';
+    const PREFS_KEY = 'ahl_basoos_ui_prefs_v7';
     const SECRET_ADMIN_PHRASE = 'M0h@med2232008';
 
-    const LIVE_DEMO_STATE = {
-      urgent: {
-        active: true,
-        text: 'تنويه عاجل لأهالي باسوس: صيانة دورية في محول كهرباء المنطقة البحرية غدًا من الساعة 9 صباحًا وحتى 1 ظهرًا.'
-      },
+    let appState = {
+      urgent: { active: false, text: '' },
       adsEnabled: true,
-      ads: [
-        {
-          id: 'ad1',
-          title: 'معامل النور للتحاليل الطبية — خصم 30% لأهالي باسوس',
-          desc: 'خصم خاص على باقات التحاليل الشاملة وصورة الدم والسكر التراكمي طوال الأسبوع.',
-          phone: '01001234567'
-        }
-      ],
-      pendingPosts: [
-        {
-          id: 'p201',
-          cat: 'news',
-          authorName: 'محمود سلامة',
-          authorEmail: 'mahmoud.s@gmail.com',
-          time: 'منذ 10 دقائق',
-          name: 'مطلوب التبرع بالدم فصيلة O- بمستشفى القناطر',
-          meta: 'حالة طارئة لأحد أبناء باسوس، يرجى التواصل لمن يتطابق معه الفصيلة.',
-          loc: 'باسوس'
-        }
-      ],
-      items: [
-        {
-          id: '101',
-          cat: 'news',
-          authorName: 'أحمد السيد',
-          time: 'منذ 35 دقيقة',
-          name: 'انطلاق مبادرة تشجير وتجميل مدخل باسوس الرئيسي بمشاركة شباب القرية',
-          meta: 'تجمع شباب من أهالي باسوس صباح اليوم لزراعة الأشجار ودهان الأرصفة بطول المدخل الرئيسي.',
-          loc: 'مدخل باسوس الرئيسي',
-          phone: '',
-          likes: 42,
-          comments: [
-            { author: 'محمود حسن', text: 'ربنا يبارك فيكم يا شباب باسوس، مجهود عظيم' }
-          ]
-        },
-        {
-          id: '102',
-          cat: 'health',
-          authorName: 'دليل باسوس',
-          time: 'معتمد',
-          name: 'د. محمود عبد الرحمن — استشاري الباطنة والأطفال',
-          meta: 'الكشف يوميًا من 6 مساءً حتى 10 مساءً ما عدا الجمعة.',
-          loc: 'شارع الوحدة الصحية - باسوس',
-          phone: '01011223344'
-        },
-        {
-          id: '103',
-          cat: 'crafts',
-          authorName: 'دليل باسوس',
-          time: 'معتمد',
-          name: 'الأسطى كريم — فني سباكة وتأسيس وصيانة',
-          meta: 'تأسيس سباكة الشقق الحديثة، صيانة السخانات، وتركيب مواتير المياه على مدار 24 ساعة.',
-          loc: 'باسوس - متاح لجميع المناطق',
-          phone: '01022334455'
-        },
-        {
-          id: '104',
-          cat: 'news',
-          authorName: 'كريم عادل',
-          time: 'منذ 5 ساعات',
-          name: 'فتح باب التسجيل في دورة كرة القدم الرمضانية بمركز شباب باسوس',
-          meta: 'باب قيد الفرق المشاركة مفتوح حتى نهاية الأسبوع الجاري بمقر مركز الشباب.',
-          loc: 'مركز شباب باسوس',
-          phone: '01234567890',
-          likes: 64,
-          comments: [
-            { author: 'يوسف طارق', text: 'بالتوفيق لكل الفرق المشاركة إن شاء الله' }
-          ]
-        }
-      ]
+      ads: [],
+      pendingPosts: [],
+      items: []
     };
 
-    let appState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || JSON.parse(JSON.stringify(LIVE_DEMO_STATE));
-    if (!appState.pendingPosts) appState.pendingPosts = [];
     let currentUser = JSON.parse(localStorage.getItem(USER_KEY)) || null;
     let uiPrefs = JSON.parse(localStorage.getItem(PREFS_KEY)) || { fontSize: '14px', fontBtn: 'font-md', theme: 'dark', layout: 'normal' };
     let currentTab = 'all';
@@ -1288,13 +1230,61 @@
       news: { label: 'أخبار البلد', icon: '📰' }
     };
 
-    function persistState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
-      renderAll();
+    // ==========================================
+    // 2. CLOUD DATA SYNC (SUPABASE)
+    // ==========================================
+    async function loadCloudData() {
+      try {
+        const [settingsRes, adsRes, postsRes] = await Promise.all([
+          db.from('settings').select('*').eq('id', 1).single(),
+          db.from('ads').select('*').order('created_at', { ascending: false }),
+          db.from('posts').select('*').order('created_at', { ascending: false })
+        ]);
+
+        if (settingsRes.data) {
+          appState.urgent = {
+            active: settingsRes.data.urgent_active,
+            text: settingsRes.data.urgent_text || ''
+          };
+          appState.adsEnabled = settingsRes.data.ads_enabled;
+        }
+
+        if (adsRes.data) {
+          appState.ads = adsRes.data.map(a => ({
+            id: a.id,
+            title: a.title,
+            desc: a.description,
+            phone: a.phone
+          }));
+        }
+
+        if (postsRes.data) {
+          const allPosts = postsRes.data.map(p => ({
+            id: p.id,
+            cat: p.cat,
+            status: p.status,
+            authorName: p.author_name,
+            authorEmail: p.author_email,
+            time: p.time_label || 'منذ قليل',
+            name: p.name,
+            meta: p.meta,
+            loc: p.loc,
+            phone: p.phone,
+            likes: p.likes || 0,
+            comments: p.comments || []
+          }));
+          appState.items = allPosts.filter(p => p.status === 'approved');
+          appState.pendingPosts = allPosts.filter(p => p.status === 'pending');
+        }
+
+        renderAll();
+      } catch (err) {
+        console.error('Cloud load error:', err);
+      }
     }
 
     // ==========================================
-    // 2. MANDATORY AUTH GATE & USER ACCOUNT
+    // 3. MANDATORY AUTH GATE & USER ACCOUNT
     // ==========================================
     function checkAuthGate() {
       const gate = document.getElementById('auth-gate');
@@ -1305,20 +1295,46 @@
       }
     }
 
-    function handleUserAuth(e) {
+    async function handleUserAuth(e) {
       e.preventDefault();
       const name = document.getElementById('gate-name-input').value.trim();
       const email = document.getElementById('gate-email-input').value.trim().toLowerCase();
-      if (!name || !email) return;
+      const password = document.getElementById('gate-pass-input').value.trim();
+      const errEl = document.getElementById('gate-error');
+      const btn = document.getElementById('gate-submit-btn');
 
-      currentUser = {
-        name,
-        email,
-        joinedAt: new Date().toLocaleDateString('ar-EG')
-      };
-      localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
-      checkAuthGate();
-      renderAll();
+      if (!name || !email || !password) return;
+      btn.disabled = true;
+      btn.textContent = 'جاري التحقق...';
+      errEl.style.display = 'none';
+
+      try {
+        const { data: existingUser } = await db.from('users_list').select('*').eq('email', email).single();
+
+        if (existingUser) {
+          if (existingUser.password !== password) {
+            errEl.textContent = 'كلمة المرور غير صحيحة لهذا البريد الإلكتروني.';
+            errEl.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'دخول إلى أهل باسوس';
+            return;
+          }
+          currentUser = { name: existingUser.name, email: existingUser.email };
+        } else {
+          await db.from('users_list').insert([{ email, name, password }]);
+          currentUser = { name, email };
+        }
+
+        localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+        checkAuthGate();
+        await loadCloudData();
+      } catch (err) {
+        errEl.textContent = 'حدث خطأ في الاتصال، حاول مرة أخرى.';
+        errEl.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'دخول إلى أهل باسوس';
+      }
     }
 
     function logoutUser() {
@@ -1355,7 +1371,7 @@
     }
 
     // ==========================================
-    // 3. VISITOR APPEARANCE & FONT SETTINGS
+    // 4. VISITOR APPEARANCE & FONT SETTINGS
     // ==========================================
     function applyUIPrefs() {
       document.documentElement.style.setProperty('--font-scale', uiPrefs.fontSize);
@@ -1403,42 +1419,53 @@
     }
 
     // ==========================================
-    // 4. VISITOR POSTING (PENDING APPROVAL) & SOCIAL
+    // 5. VISITOR POSTING (PENDING APPROVAL) & SOCIAL
     // ==========================================
     function toggleComposer() {
       const box = document.getElementById('composer-expanded');
       box.classList.toggle('open');
     }
 
-    function submitVisitorPost() {
+    async function submitVisitorPost() {
       if (!currentUser) return;
       const title = document.getElementById('post-new-title').value.trim();
       const desc = document.getElementById('post-new-desc').value.trim();
       const loc = document.getElementById('post-new-loc').value.trim();
+      const btn = document.getElementById('submit-post-btn');
 
       if (!title && !desc) return alert('اكتب عنوان أو تفاصيل المنشور أولاً');
+      btn.disabled = true;
+      btn.textContent = 'جاري الإرسال...';
 
-      appState.pendingPosts.unshift({
+      const newPost = {
         id: 'p_' + Date.now().toString(),
         cat: 'news',
-        authorName: currentUser.name,
-        authorEmail: currentUser.email,
-        time: 'الآن',
+        status: 'pending',
+        author_name: currentUser.name,
+        author_email: currentUser.email,
+        time_label: new Date().toLocaleDateString('ar-EG'),
         name: title || 'مشاركة من ' + currentUser.name,
         meta: desc,
-        loc: loc || 'قرية باسوس'
-      });
+        loc: loc || 'قرية باسوس',
+        phone: '',
+        likes: 0,
+        comments: []
+      };
+
+      await db.from('posts').insert([newPost]);
 
       document.getElementById('post-new-title').value = '';
       document.getElementById('post-new-desc').value = '';
       document.getElementById('post-new-loc').value = '';
       document.getElementById('composer-expanded').classList.remove('open');
+      btn.disabled = false;
+      btn.textContent = 'إرسال للمراجعة والنشر';
 
       const notice = document.getElementById('pending-notice');
       notice.style.display = 'block';
       setTimeout(() => { notice.style.display = 'none'; }, 5000);
 
-      persistState();
+      await loadCloudData();
     }
 
     function toggleComments(id) {
@@ -1446,7 +1473,7 @@
       if (box) box.classList.toggle('open');
     }
 
-    function addComment(e, id) {
+    async function addComment(e, id) {
       e.preventDefault();
       if (!currentUser) return;
       const input = document.getElementById('comment-input-' + id);
@@ -1455,32 +1482,37 @@
 
       const item = appState.items.find(i => i.id === id && i.cat === 'news');
       if (!item) return;
-      if (!item.comments) item.comments = [];
-      item.comments.push({ author: currentUser.name, text });
+      const updatedComments = [...(item.comments || []), { author: currentUser.name, text }];
       input.value = '';
-      persistState();
+
+      await db.from('posts').update({ comments: updatedComments }).eq('id', id);
+      await loadCloudData();
+
       setTimeout(() => {
         const box = document.getElementById('comments-' + id);
         if (box) box.classList.add('open');
-      }, 30);
+      }, 40);
     }
 
-    function toggleLike(id) {
+    async function toggleLike(id) {
       const item = appState.items.find(i => i.id === id && i.cat === 'news');
       if (!item) return;
+      let newLikes = item.likes || 0;
       if (likedPosts[id]) {
         delete likedPosts[id];
-        item.likes = Math.max(0, (item.likes || 1) - 1);
+        newLikes = Math.max(0, newLikes - 1);
       } else {
         likedPosts[id] = true;
-        item.likes = (item.likes || 0) + 1;
+        newLikes += 1;
       }
       localStorage.setItem('ahl_basoos_likes', JSON.stringify(likedPosts));
-      persistState();
+      item.likes = newLikes;
+      renderFeed();
+      await db.from('posts').update({ likes: newLikes }).eq('id', id);
     }
 
     // ==========================================
-    // 5. SECRET SEARCH & FEED RENDERING
+    // 6. SECRET SEARCH & FEED RENDERING
     // ==========================================
     function handleSearchInput() {
       const searchEl = document.getElementById('search-input');
@@ -1574,7 +1606,7 @@
       if (filtered.length === 0) {
         listEl.innerHTML = `
           <div class="post-card" style="text-align:center; padding:26px 14px; color:var(--muted);">
-            <div style="font-weight:700; color:var(--text);">لا توجد عناصر مطابقة</div>
+            <div style="font-weight:700; color:var(--text);">لا توجد منشورات أو بيانات حالياً</div>
           </div>
         `;
         return;
@@ -1619,298 +1651,4 @@
               <div class="comments-box" id="comments-${item.id}">
                 ${comments.map(c => `
                   <div class="comment-item">
-                    <div class="comment-author">${escapeHTML(c.author)}</div>
-                    <div>${escapeHTML(c.text)}</div>
-                  </div>
-                `).join('')}
-                <form class="comment-form" onsubmit="addComment(event, '${item.id}')">
-                  <input type="text" id="comment-input-${item.id}" class="comment-input" placeholder="اكتب تعليقك..." />
-                  <button type="submit" class="btn-secondary">إرسال</button>
-                </form>
-              </div>
-            ` : ''}
-          </article>
-        `;
-      }).join('');
-    }
-
-    function renderAll() {
-      if (isAdminLoggedIn) {
-        document.getElementById('secret-admin-btn').style.display = 'flex';
-      }
-      updateUserUI();
-      renderUrgent();
-      renderAds();
-      renderFeed();
-      if (isAdminLoggedIn) renderAdminLists();
-    }
-
-    // ==========================================
-    // 6. ADMIN CONTROLS & POST APPROVAL QUEUE
-    // ==========================================
-    function resetDemoData() {
-      if (!confirm('إعادة ضبط البيانات التجريبية؟')) return;
-      appState = JSON.parse(JSON.stringify(LIVE_DEMO_STATE));
-      persistState();
-    }
-
-    function openAdminModal() {
-      document.getElementById('admin-modal').classList.add('open');
-      updateAdminView();
-    }
-
-    function closeAdminModal() {
-      document.getElementById('admin-modal').classList.remove('open');
-    }
-
-    function updateAdminView() {
-      const loginView = document.getElementById('admin-login-view');
-      const dashView = document.getElementById('admin-dashboard-view');
-      if (isAdminLoggedIn) {
-        loginView.style.display = 'none';
-        dashView.style.display = 'block';
-        document.getElementById('urgent-toggle').checked = appState.urgent.active;
-        document.getElementById('urgent-input').value = appState.urgent.text;
-        document.getElementById('ads-toggle').checked = appState.adsEnabled;
-        renderAdminLists();
-      } else {
-        loginView.style.display = 'block';
-        dashView.style.display = 'none';
-      }
-    }
-
-    function handleAdminLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('admin-email').value.trim().toLowerCase();
-      const pass = document.getElementById('admin-password').value;
-      const errEl = document.getElementById('login-error');
-
-      if (email === ADMIN_CREDENTIALS.email && pass === ADMIN_CREDENTIALS.password) {
-        isAdminLoggedIn = true;
-        sessionStorage.setItem('ahl_basoos_admin', 'true');
-        errEl.style.display = 'none';
-        updateAdminView();
-      } else {
-        errEl.textContent = 'بيانات المشرف غير صحيحة.';
-        errEl.style.display = 'block';
-      }
-    }
-
-    function logoutAdmin() {
-      isAdminLoggedIn = false;
-      sessionStorage.removeItem('ahl_basoos_admin');
-      document.getElementById('secret-admin-btn').style.display = 'none';
-      closeAdminModal();
-    }
-
-    function approvePendingPost(id) {
-      const idx = appState.pendingPosts.findIndex(p => p.id === id);
-      if (idx === -1) return;
-      const post = appState.pendingPosts.splice(idx, 1)[0];
-      appState.items.unshift({
-        ...post,
-        time: 'الآن',
-        phone: '',
-        likes: 1,
-        comments: []
-      });
-      persistState();
-    }
-
-    function rejectPendingPost(id) {
-      if (!confirm('رفض وحذف هذا المنشور؟')) return;
-      appState.pendingPosts = appState.pendingPosts.filter(p => p.id !== id);
-      persistState();
-    }
-
-    function saveUrgentSettings() {
-      appState.urgent.active = document.getElementById('urgent-toggle').checked;
-      appState.urgent.text = document.getElementById('urgent-input').value.trim();
-      persistState();
-    }
-
-    function toggleAdsSection() {
-      appState.adsEnabled = document.getElementById('ads-toggle').checked;
-      persistState();
-    }
-
-    function addAd() {
-      const title = document.getElementById('ad-title').value.trim();
-      const desc = document.getElementById('ad-desc').value.trim();
-      const phone = document.getElementById('ad-phone').value.trim();
-      if (!title) return alert('اكتب عنوان الإعلان');
-
-      appState.ads.unshift({ id: Date.now().toString(), title, desc, phone });
-      appState.adsEnabled = true;
-      document.getElementById('ads-toggle').checked = true;
-      document.getElementById('ad-title').value = '';
-      document.getElementById('ad-desc').value = '';
-      document.getElementById('ad-phone').value = '';
-      persistState();
-    }
-
-    function deleteAd(id) {
-      appState.ads = appState.ads.filter(a => a.id !== id);
-      if (appState.ads.length === 0) {
-        appState.adsEnabled = false;
-        document.getElementById('ads-toggle').checked = false;
-      }
-      persistState();
-    }
-
-    function saveFeedItem() {
-      const editId = document.getElementById('edit-item-id').value;
-      const cat = document.getElementById('item-cat').value;
-      const name = document.getElementById('item-name').value.trim();
-      const meta = document.getElementById('item-meta').value.trim();
-      const loc = document.getElementById('item-loc').value.trim();
-      const phone = document.getElementById('item-phone').value.trim();
-
-      if (!name) return alert('أدخل العنوان أو الاسم');
-
-      if (editId) {
-        const idx = appState.items.findIndex(i => i.id === editId);
-        if (idx !== -1) {
-          appState.items[idx] = { ...appState.items[idx], cat, name, meta, loc, phone };
-        }
-      } else {
-        const newItem = {
-          id: Date.now().toString(),
-          cat,
-          authorName: cat === 'news' ? 'إدارة أهل باسوس' : 'دليل باسوس',
-          time: cat === 'news' ? 'الآن' : 'معتمد',
-          name,
-          meta,
-          loc,
-          phone
-        };
-        if (cat === 'news') {
-          newItem.likes = 1;
-          newItem.comments = [];
-        }
-        appState.items.unshift(newItem);
-      }
-
-      resetItemForm();
-      persistState();
-    }
-
-    function editFeedItem(id) {
-      const item = appState.items.find(i => i.id === id);
-      if (!item) return;
-      document.getElementById('edit-item-id').value = item.id;
-      document.getElementById('item-cat').value = item.cat;
-      document.getElementById('item-name').value = item.name;
-      document.getElementById('item-meta').value = item.meta || '';
-      document.getElementById('item-loc').value = item.loc || '';
-      document.getElementById('item-phone').value = item.phone || '';
-      document.getElementById('save-item-btn').textContent = 'حفظ التعديل';
-      document.getElementById('cancel-edit-btn').style.display = 'inline-block';
-    }
-
-    function deleteFeedItem(id) {
-      if (!confirm('حذف هذا العنصر؟')) return;
-      appState.items = appState.items.filter(i => i.id !== id);
-      persistState();
-    }
-
-    function resetItemForm() {
-      document.getElementById('edit-item-id').value = '';
-      document.getElementById('item-name').value = '';
-      document.getElementById('item-meta').value = '';
-      document.getElementById('item-loc').value = '';
-      document.getElementById('item-phone').value = '';
-      document.getElementById('save-item-btn').textContent = '+ نشر مباشر';
-      document.getElementById('cancel-edit-btn').style.display = 'none';
-    }
-
-    function renderAdminLists() {
-      const pendingBadge = document.getElementById('pending-count-badge');
-      const pendingList = document.getElementById('admin-pending-list');
-      pendingBadge.textContent = appState.pendingPosts.length;
-
-      if (appState.pendingPosts.length === 0) {
-        pendingList.innerHTML = `<div style="font-size:0.78rem; color:var(--muted);">لا توجد منشورات معلقة حالياً.</div>`;
-      } else {
-        pendingList.innerHTML = appState.pendingPosts.map(p => `
-          <div class="pending-row">
-            <div style="font-weight:800; color:var(--text);">${escapeHTML(p.name)}</div>
-            <div style="font-size:0.74rem; color:var(--muted); margin:2px 0;">بواسطة: ${escapeHTML(p.authorName)} (${escapeHTML(p.authorEmail || '')})</div>
-            ${p.meta ? `<div style="font-size:0.78rem; margin:4px 0;">${escapeHTML(p.meta)}</div>` : ''}
-            <div style="display:flex; gap:6px; margin-top:8px;">
-              <button class="btn-primary" style="padding:5px; font-size:0.78rem;" onclick="approvePendingPost('${p.id}')">موافقة ونشر</button>
-              <button class="btn-danger" onclick="rejectPendingPost('${p.id}')">رفض</button>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      const adsList = document.getElementById('admin-ads-list');
-      adsList.innerHTML = appState.ads.map(ad => `
-        <div class="admin-item-row">
-          <span><strong>${escapeHTML(ad.title)}</strong></span>
-          <button class="btn-danger" onclick="deleteAd('${ad.id}')">حذف</button>
-        </div>
-      `).join('');
-
-      const itemsList = document.getElementById('admin-items-list');
-      itemsList.innerHTML = appState.items.map(item => `
-        <div class="admin-item-row">
-          <div>
-            <strong>${escapeHTML(item.name)}</strong>
-            <div style="font-size:0.72rem; color:var(--muted);">${(CAT_BADGES[item.cat] || {}).label || item.cat}</div>
-          </div>
-          <div style="display:flex; gap:5px; flex-shrink:0;">
-            <button class="btn-secondary" onclick="editFeedItem('${item.id}')">تعديل</button>
-            <button class="btn-danger" onclick="deleteFeedItem('${item.id}')">حذف</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function escapeHTML(str) {
-      if (!str) return '';
-      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
-    }
-
-    // ==========================================
-    // 7. PWA SETUP
-    // ==========================================
-    let deferredPrompt;
-    const manifestObj = {
-      name: "أهل باسوس",
-      short_name: "أهل باسوس",
-      start_url: ".",
-      display: "standalone",
-      background_color: "#09090b",
-      theme_color: "#09090b",
-      icons: [{
-        src: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%2310b981'/><text y='.9em' x='50%' text-anchor='middle' font-size='65'>🏘️</text></svg>",
-        sizes: "192x192",
-        type: "image/svg+xml"
-      }]
-    };
-    const manifestBlob = new Blob([JSON.stringify(manifestObj)], { type: 'application/json' });
-    document.getElementById('pwa-manifest').setAttribute('href', URL.createObjectURL(manifestBlob));
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-    });
-
-    function triggerPWAInstall() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt = null;
-      } else {
-        alert('لتثبيت "أهل باسوس" كتطبيق على موبايلك:\n1. اضغط على قائمة المتصفح (⋮ في أندرويد أو زر المشاركة ⬆️ في آيفون).\n2. اختر "الإضافة إلى الشاشة الرئيسية" (Add to Home Screen).');
-      }
-    }
-
-    // Initial Boot
-    checkAuthGate();
-    applyUIPrefs();
-    renderAll();
-  </script>
-</body>
-</html>
+                    <div class="comment-author">${escapeHTML(c.autho
