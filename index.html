@@ -829,11 +829,6 @@
       cursor: pointer;
     }
 
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
     .btn-secondary {
       background: var(--surface-elevated);
       color: var(--text);
@@ -918,22 +913,20 @@
       <p style="text-align:center; font-size:0.8rem; color:var(--muted); margin-bottom:16px;">
         المنصة خاصة بأهالي باسوس فقط. سجل دخولك أو أنشئ حسابك بالجيميل للمتابعة.
       </p>
-      <form onsubmit="handleUserAuth(event)">
-        <div class="form-group">
-          <label>الاسم بالكامل</label>
-          <input type="text" id="gate-name-input" class="form-control" placeholder="اكتب اسمك الحقيقي" required />
-        </div>
-        <div class="form-group">
-          <label>البريد الإلكتروني (Gmail)</label>
-          <input type="email" id="gate-email-input" class="form-control" placeholder="example@gmail.com" required />
-        </div>
-        <div class="form-group">
-          <label>كلمة المرور</label>
-          <input type="password" id="gate-pass-input" class="form-control" placeholder="••••••••" required />
-        </div>
-        <p id="gate-error" style="color:var(--danger); font-size:0.8rem; margin-bottom:10px; display:none;"></p>
-        <button type="submit" id="gate-submit-btn" class="btn-primary">دخول إلى أهل باسوس</button>
-      </form>
+      <div class="form-group">
+        <label>الاسم بالكامل</label>
+        <input type="text" id="gate-name-input" class="form-control" placeholder="اكتب اسمك الحقيقي" />
+      </div>
+      <div class="form-group">
+        <label>البريد الإلكتروني (Gmail)</label>
+        <input type="email" id="gate-email-input" class="form-control" placeholder="example@gmail.com" />
+      </div>
+      <div class="form-group">
+        <label>كلمة المرور</label>
+        <input type="password" id="gate-pass-input" class="form-control" placeholder="••••••••" />
+      </div>
+      <p id="gate-error" style="color:var(--danger); font-size:0.8rem; margin-bottom:10px; display:none;"></p>
+      <button type="button" id="gate-submit-btn" class="btn-primary" onclick="handleUserAuth()">دخول إلى أهل باسوس</button>
     </div>
   </div>
 
@@ -946,9 +939,9 @@
           <h1>أهل باسوس</h1>
         </div>
         <div class="header-actions">
-          <button class="icon-btn" onclick="loadCloudData()" title="تحديث">تحديث</button>
-          <button class="icon-btn" onclick="triggerPWAInstall()">تثبيت</button>
-          <button class="icon-btn" id="secret-admin-btn" onclick="openAdminModal()">الإدارة</button>
+          <button type="button" class="icon-btn" onclick="loadCloudData()">تحديث</button>
+          <button type="button" class="icon-btn" onclick="triggerPWAInstall()">تثبيت</button>
+          <button type="button" class="icon-btn" id="secret-admin-btn" onclick="openAdminModal()">الإدارة</button>
         </div>
       </div>
     </div>
@@ -996,8 +989,8 @@
             <input type="text" id="post-new-loc" class="form-control" placeholder="المكان في باسوس (اختياري)" />
           </div>
           <div style="display:flex; gap:8px;">
-            <button class="btn-primary" id="submit-post-btn" onclick="submitVisitorPost()">إرسال للمراجعة والنشر</button>
-            <button class="btn-secondary" onclick="toggleComposer()">إلغاء</button>
+            <button type="button" class="btn-primary" id="submit-post-btn" onclick="submitVisitorPost()">إرسال للمراجعة والنشر</button>
+            <button type="button" class="btn-secondary" onclick="toggleComposer()">إلغاء</button>
           </div>
         </div>
       </section>
@@ -1008,9 +1001,7 @@
         <span class="feed-count" id="feed-count">0</span>
       </div>
 
-      <div class="feed-list" id="feed-list">
-        <div class="post-card" style="text-align:center; padding:24px; color:var(--muted);">جاري تحميل بيانات أهل باسوس...</div>
-      </div>
+      <div class="feed-list" id="feed-list"></div>
     </div>
 
     <!-- Account & Appearance Settings View (Tab 5) -->
@@ -1024,21 +1015,21 @@
 
           <label style="font-size:0.8rem; color:var(--muted); display:block; margin-bottom:6px;">حجم الخط</label>
           <div class="segmented-control">
-            <button class="seg-btn" id="font-sm" onclick="setFontSize('13px', 'font-sm')">صغير</button>
-            <button class="seg-btn active" id="font-md" onclick="setFontSize('14px', 'font-md')">متوسط</button>
-            <button class="seg-btn" id="font-lg" onclick="setFontSize('16px', 'font-lg')">كبير</button>
+            <button type="button" class="seg-btn" id="font-sm" onclick="setFontSize('13px', 'font-sm')">صغير</button>
+            <button type="button" class="seg-btn active" id="font-md" onclick="setFontSize('14px', 'font-md')">متوسط</button>
+            <button type="button" class="seg-btn" id="font-lg" onclick="setFontSize('16px', 'font-lg')">كبير</button>
           </div>
 
           <label style="font-size:0.8rem; color:var(--muted); display:block; margin-bottom:6px;">مظهر الألوان</label>
           <div class="segmented-control" style="grid-template-columns: repeat(2, 1fr);">
-            <button class="seg-btn active" id="theme-dark-btn" onclick="setTheme('dark')">الوضع الليلي</button>
-            <button class="seg-btn" id="theme-light-btn" onclick="setTheme('light')">الوضع النهاري</button>
+            <button type="button" class="seg-btn active" id="theme-dark-btn" onclick="setTheme('dark')">الوضع الليلي</button>
+            <button type="button" class="seg-btn" id="theme-light-btn" onclick="setTheme('light')">الوضع النهاري</button>
           </div>
 
           <label style="font-size:0.8rem; color:var(--muted); display:block; margin-bottom:6px;">شكل العرض</label>
           <div class="segmented-control" style="grid-template-columns: repeat(2, 1fr);">
-            <button class="seg-btn active" id="layout-normal-btn" onclick="setLayout('normal')">مريح</button>
-            <button class="seg-btn" id="layout-compact-btn" onclick="setLayout('compact')">مدمج</button>
+            <button type="button" class="seg-btn active" id="layout-normal-btn" onclick="setLayout('normal')">مريح</button>
+            <button type="button" class="seg-btn" id="layout-compact-btn" onclick="setLayout('compact')">مدمج</button>
           </div>
         </div>
       </div>
@@ -1062,19 +1053,19 @@
   <!-- Clean Bottom Navigation Bar (No Emojis) -->
   <nav class="bottom-nav">
     <div class="bottom-nav-inner">
-      <button class="nav-tab active" data-tab="all" onclick="switchTab('all', this)">
+      <button type="button" class="nav-tab active" data-tab="all" onclick="switchTab('all', this)">
         <span>الرئيسية</span>
       </button>
-      <button class="nav-tab" data-tab="health" onclick="switchTab('health', this)">
+      <button type="button" class="nav-tab" data-tab="health" onclick="switchTab('health', this)">
         <span>صحة وعيادات</span>
       </button>
-      <button class="nav-tab" data-tab="crafts" onclick="switchTab('crafts', this)">
+      <button type="button" class="nav-tab" data-tab="crafts" onclick="switchTab('crafts', this)">
         <span>صنايعية</span>
       </button>
-      <button class="nav-tab" data-tab="news" onclick="switchTab('news', this)">
+      <button type="button" class="nav-tab" data-tab="news" onclick="switchTab('news', this)">
         <span>أخبار البلد</span>
       </button>
-      <button class="nav-tab" data-tab="account" onclick="switchTab('account', this)">
+      <button type="button" class="nav-tab" data-tab="account" onclick="switchTab('account', this)">
         <span>حسابي</span>
       </button>
     </div>
@@ -1085,23 +1076,21 @@
     <div class="modal-box">
       <div class="modal-header">
         <h3>لوحة تحكم أهل باسوس</h3>
-        <button class="close-btn" onclick="closeAdminModal()">✕</button>
+        <button type="button" class="close-btn" onclick="closeAdminModal()">✕</button>
       </div>
 
       <!-- Admin Login View -->
       <div id="admin-login-view">
-        <form onsubmit="handleAdminLogin(event)">
-          <div class="form-group">
-            <label>البريد الإلكتروني (Gmail)</label>
-            <input type="email" id="admin-email" class="form-control" placeholder="example@gmail.com" required />
-          </div>
-          <div class="form-group">
-            <label>كلمة المرور</label>
-            <input type="password" id="admin-password" class="form-control" placeholder="••••••••" required />
-          </div>
-          <p id="login-error" style="color: var(--danger); font-size: 0.8rem; margin-bottom: 10px; display: none;"></p>
-          <button type="submit" class="btn-primary">تسجيل الدخول</button>
-        </form>
+        <div class="form-group">
+          <label>البريد الإلكتروني (Gmail)</label>
+          <input type="email" id="admin-email" class="form-control" placeholder="example@gmail.com" />
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <input type="password" id="admin-password" class="form-control" placeholder="••••••••" />
+        </div>
+        <p id="login-error" style="color: var(--danger); font-size: 0.8rem; margin-bottom: 10px; display: none;"></p>
+        <button type="button" class="btn-primary" onclick="handleAdminLogin()">تسجيل الدخول</button>
       </div>
 
       <!-- Admin Dashboard View -->
@@ -1109,8 +1098,8 @@
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <span style="font-size:0.8rem; color:var(--primary); font-weight:700;">متصل بالسيرفر كمشرف</span>
           <div style="display:flex; gap:6px;">
-            <button class="btn-secondary" onclick="loadCloudData()">تحديث</button>
-            <button class="btn-secondary" onclick="logoutAdmin()">خروج</button>
+            <button type="button" class="btn-secondary" onclick="loadCloudData()">تحديث</button>
+            <button type="button" class="btn-secondary" onclick="logoutAdmin()">خروج</button>
           </div>
         </div>
 
@@ -1130,7 +1119,7 @@
           <div class="form-group">
             <input type="text" id="urgent-input" class="form-control" placeholder="نص الخبر العاجل..." />
           </div>
-          <button class="btn-primary" onclick="saveUrgentSettings()">تحديث الخبر للجميع</button>
+          <button type="button" class="btn-primary" onclick="saveUrgentSettings()">تحديث الخبر للجميع</button>
         </div>
 
         <!-- 2. Smart Ads Control -->
@@ -1149,7 +1138,7 @@
           <div class="form-group">
             <input type="text" id="ad-phone" class="form-control" placeholder="رقم التواصل (اختياري)" />
           </div>
-          <button class="btn-primary" onclick="addAd()">+ نشر إعلان</button>
+          <button type="button" class="btn-primary" onclick="addAd()">+ نشر إعلان</button>
           <div id="admin-ads-list"></div>
         </div>
 
@@ -1177,8 +1166,8 @@
             <input type="tel" id="item-phone" class="form-control" placeholder="رقم الهاتف (اختياري)" />
           </div>
           <div style="display:flex; gap:6px;">
-            <button class="btn-primary" id="save-item-btn" onclick="saveFeedItem()">+ نشر مباشر</button>
-            <button class="btn-secondary" id="cancel-edit-btn" style="display:none;" onclick="resetItemForm()">إلغاء</button>
+            <button type="button" class="btn-primary" id="save-item-btn" onclick="saveFeedItem()">+ نشر مباشر</button>
+            <button type="button" class="btn-secondary" id="cancel-edit-btn" style="display:none;" onclick="resetItemForm()">إلغاء</button>
           </div>
           <div id="admin-items-list" style="margin-top:10px;"></div>
         </div>
@@ -1192,14 +1181,21 @@
     // ==========================================
     const SUPABASE_URL = 'https://gjtomloeqjfptucomktv.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_1xiDjhFAQdtw6HpaAY9K9A_QegZzcZy';
-    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let db = null;
+    try {
+      if (window.supabase && window.supabase.createClient) {
+        db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
+    } catch (e) {
+      console.error('Supabase init error:', e);
+    }
 
-    const USER_KEY = 'ahl_basoos_current_user_v7';
-    const PREFS_KEY = 'ahl_basoos_ui_prefs_v7';
+    const USER_KEY = 'ahl_basoos_current_user_v8';
+    const PREFS_KEY = 'ahl_basoos_ui_prefs_v8';
     const SECRET_ADMIN_PHRASE = 'M0h@med2232008';
 
     let appState = {
-      urgent: { active: false, text: '' },
+      urgent: { active: true, text: 'أهلاً بكم في منصة أهل باسوس الرسمية لخدمة أهالي القرية.' },
       adsEnabled: true,
       ads: [],
       pendingPosts: [],
@@ -1234,14 +1230,18 @@
     // 2. CLOUD DATA SYNC (SUPABASE)
     // ==========================================
     async function loadCloudData() {
+      if (!db) {
+        renderAll();
+        return;
+      }
       try {
         const [settingsRes, adsRes, postsRes] = await Promise.all([
-          db.from('settings').select('*').eq('id', 1).single(),
+          db.from('settings').select('*').eq('id', 1).maybeSingle(),
           db.from('ads').select('*').order('created_at', { ascending: false }),
           db.from('posts').select('*').order('created_at', { ascending: false })
         ]);
 
-        if (settingsRes.data) {
+        if (settingsRes && settingsRes.data) {
           appState.urgent = {
             active: settingsRes.data.urgent_active,
             text: settingsRes.data.urgent_text || ''
@@ -1249,7 +1249,7 @@
           appState.adsEnabled = settingsRes.data.ads_enabled;
         }
 
-        if (adsRes.data) {
+        if (adsRes && adsRes.data) {
           appState.ads = adsRes.data.map(a => ({
             id: a.id,
             title: a.title,
@@ -1258,7 +1258,7 @@
           }));
         }
 
-        if (postsRes.data) {
+        if (postsRes && postsRes.data) {
           const allPosts = postsRes.data.map(p => ({
             id: p.id,
             cat: p.cat,
@@ -1280,6 +1280,7 @@
         renderAll();
       } catch (err) {
         console.error('Cloud load error:', err);
+        renderAll();
       }
     }
 
@@ -1288,52 +1289,42 @@
     // ==========================================
     function checkAuthGate() {
       const gate = document.getElementById('auth-gate');
-      if (currentUser) {
+      if (currentUser && currentUser.email) {
         gate.style.display = 'none';
       } else {
         gate.style.display = 'flex';
       }
     }
 
-    async function handleUserAuth(e) {
-      e.preventDefault();
+    async function handleUserAuth() {
       const name = document.getElementById('gate-name-input').value.trim();
       const email = document.getElementById('gate-email-input').value.trim().toLowerCase();
       const password = document.getElementById('gate-pass-input').value.trim();
       const errEl = document.getElementById('gate-error');
-      const btn = document.getElementById('gate-submit-btn');
 
-      if (!name || !email || !password) return;
-      btn.disabled = true;
-      btn.textContent = 'جاري التحقق...';
-      errEl.style.display = 'none';
-
-      try {
-        const { data: existingUser } = await db.from('users_list').select('*').eq('email', email).single();
-
-        if (existingUser) {
-          if (existingUser.password !== password) {
-            errEl.textContent = 'كلمة المرور غير صحيحة لهذا البريد الإلكتروني.';
-            errEl.style.display = 'block';
-            btn.disabled = false;
-            btn.textContent = 'دخول إلى أهل باسوس';
-            return;
-          }
-          currentUser = { name: existingUser.name, email: existingUser.email };
-        } else {
-          await db.from('users_list').insert([{ email, name, password }]);
-          currentUser = { name, email };
-        }
-
-        localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
-        checkAuthGate();
-        await loadCloudData();
-      } catch (err) {
-        errEl.textContent = 'حدث خطأ في الاتصال، حاول مرة أخرى.';
+      if (!name || !email || !password) {
+        errEl.textContent = 'من فضلك اكتب الاسم والجيميل وكلمة المرور.';
         errEl.style.display = 'block';
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'دخول إلى أهل باسوس';
+        return;
+      }
+
+      errEl.style.display = 'none';
+      currentUser = { name, email };
+      localStorage.setItem(USER_KEY, JSON.stringify(currentUser));
+      checkAuthGate();
+      renderAll();
+
+      // Sync user with Supabase in background
+      if (db) {
+        try {
+          const { data: existingUser } = await db.from('users_list').select('*').eq('email', email).maybeSingle();
+          if (!existingUser) {
+            await db.from('users_list').insert([{ email, name, password }]);
+          }
+          await loadCloudData();
+        } catch (e) {
+          console.error('User sync warning:', e);
+        }
       }
     }
 
@@ -1366,7 +1357,7 @@
             </div>
           </div>
         </div>
-        <button class="btn-secondary" style="width:100%;" onclick="logoutUser()">تسجيل الخروج من الحساب</button>
+        <button type="button" class="btn-secondary" style="width:100%;" onclick="logoutUser()">تسجيل الخروج من الحساب</button>
       `;
     }
 
@@ -1452,7 +1443,9 @@
         comments: []
       };
 
-      await db.from('posts').insert([newPost]);
+      if (db) {
+        await db.from('posts').insert([newPost]);
+      }
 
       document.getElementById('post-new-title').value = '';
       document.getElementById('post-new-desc').value = '';
@@ -1473,8 +1466,7 @@
       if (box) box.classList.toggle('open');
     }
 
-    async function addComment(e, id) {
-      e.preventDefault();
+    async function addComment(id) {
       if (!currentUser) return;
       const input = document.getElementById('comment-input-' + id);
       const text = input.value.trim();
@@ -1485,7 +1477,9 @@
       const updatedComments = [...(item.comments || []), { author: currentUser.name, text }];
       input.value = '';
 
-      await db.from('posts').update({ comments: updatedComments }).eq('id', id);
+      if (db) {
+        await db.from('posts').update({ comments: updatedComments }).eq('id', id);
+      }
       await loadCloudData();
 
       setTimeout(() => {
@@ -1508,7 +1502,9 @@
       localStorage.setItem('ahl_basoos_likes', JSON.stringify(likedPosts));
       item.likes = newLikes;
       renderFeed();
-      await db.from('posts').update({ likes: newLikes }).eq('id', id);
+      if (db) {
+        await db.from('posts').update({ likes: newLikes }).eq('id', id);
+      }
     }
 
     // ==========================================
@@ -1636,10 +1632,10 @@
               <span class="post-location">${item.loc ? escapeHTML(item.loc) : 'قرية باسوس'}</span>
               <div class="social-actions">
                 ${isPost ? `
-                  <button class="action-chip ${isLiked ? 'liked' : ''}" onclick="toggleLike('${item.id}')">
+                  <button type="button" class="action-chip ${isLiked ? 'liked' : ''}" onclick="toggleLike('${item.id}')">
                     إعجاب (${item.likes || 0})
                   </button>
-                  <button class="action-chip" onclick="toggleComments('${item.id}')">
+                  <button type="button" class="action-chip" onclick="toggleComments('${item.id}')">
                     تعليق (${comments.length})
                   </button>
                 ` : ''}
@@ -1651,4 +1647,6 @@
               <div class="comments-box" id="comments-${item.id}">
                 ${comments.map(c => `
                   <div class="comment-item">
-                    <div class="comment-author">${escapeHTML(c.autho
+                    <div class="comment-author">${escapeHTML(c.author)}</div>
+                    <div>${escapeHTML(c.text)}</div>
+      
